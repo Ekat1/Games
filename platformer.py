@@ -41,46 +41,52 @@ while run:
     if keys[pygame.K_UP]:
         if ground == True:
             yvel = jump_height * -1
+    
+    #Platform hitboxes(currently not functional under platforms)
 
-    #Momentum/Friction
+    for platform in platforms:
+        pygame.draw.rect(window,(0, 0, 0),(platform[0],platform[1],platform[2],platform[3]))
+        #top and bottom hitbox
+        if x + xvel > platform[0] - 50:
+            if x + xvel < platform[0] + platform[2]:
+                if y <= platform[1] - 50:
+                    if y + yvel >= platform[1] - 50:
+                        ground = True
+                        y = platform[1] - 50
+                        yvel = 0
+                    else:
+                        ground = False
+            
+                if y >= platform[1] + platform[3]:
+                    if y + yvel < platform[1] + platform[3]:
+                        y  = platform[1] + platform[3]
+                        yvel = 0
+
+        #side hitboxes
+
+        if y > platform[1] - 50:
+            if y < platform[1] + platform[3]:
+                if x + 50 <= platform[0]:
+                    if x + 50 + xvel > platform[0]:
+                        xvel = 0
+                        x = platform[0] - 50        
+                if x >= platform[0] + platform[2]:
+                    if x + xvel < platform[0] + platform[2]:
+                        xvel = 0
+                        x = platform[0] + platform[2]
+    
+    #Gravity, momemtum, friction, and movement
 
     if xvel < 0:
         xvel += 1
     if xvel > 0:
         xvel -= 1
 
-    # y movement
-
+    if ground == False:
+        yvel += 1
     y += yvel
-
-    #Platform hitboxes(currently not functional under platforms)
-
-    for platform in platforms:
-        pygame.draw.rect(window,(0, 0, 0),(platform[0],platform[1],platform[2],platform[3]))
-        if y >= platform[1] - 50:
-            if y < platform[1] + platform[3]:
-                if x + 50 <= platform[0]:
-                    if x + 50 + xvel > platform[0]:
-                        xvel = 0
-                        x = platform[0] - 50
-                if x >= platform[0] + platform[2]:
-                    if x + xvel < platform[0] + platform[2]:
-                        xvel = 0
-                        x = platform[0] + platform[2]
-                if x + 50 > platform[0]:
-                    if x < platform[0] + platform[2]:
-                        ground = True
-                        y = platform[1] - 50
-                        yvel = 0
-    
-        
-        else:
-            ground = False
-    #Gravity and x movement
-
-    yvel += 1
     x += xvel
-
+    
     pygame.display.update() #Update display
             
     pygame.time.delay(30) #Tick delay
